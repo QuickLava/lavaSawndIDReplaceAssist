@@ -5,7 +5,7 @@ int stringToNum(const std::string& stringIn, bool allowNeg, int defaultVal)
 {
 	int result = defaultVal;
 	std::string manipStr = stringIn;
-	int base = (manipStr.find("0x") == 0) ? 16 : 10;
+	int base = ((manipStr.find("0x") == 0) || (manipStr.find("0X") == 0)) ? 16 : 10;
 	char* res = nullptr;
 	result = std::strtoul(manipStr.c_str(), &res, base);
 	if (res != (manipStr.c_str() + manipStr.size()))
@@ -19,146 +19,157 @@ int stringToNum(const std::string& stringIn, bool allowNeg, int defaultVal)
 	return result;
 }
 
-std::pair<std::size_t, std::size_t> parseIDPair(std::string pairStringIn)
+std::size_t decision(const std::string optionsIn)
 {
-	std::pair<std::size_t, std::size_t> result = { SIZE_MAX, SIZE_MAX };
-
-	// Removes any space characters
-	std::string manipStr = "";
-	for (std::size_t i = 0; i < pairStringIn.size(); i++)
+	std::size_t result = std::string::npos;
+	char keyIn = ' ';
+	while (result == std::string::npos)
 	{
-		if (!std::isspace(pairStringIn[i]))
-		{
-			manipStr += pairStringIn[i];
-		}
+		keyIn = _getch();
+		result = optionsIn.find(keyIn);
 	}
-
-	std::size_t delimLoc = manipStr.find(':');
-	if (delimLoc != std::string::npos && delimLoc > 0 && delimLoc < (manipStr.size() - 1))
-	{
-		std::pair<std::size_t, std::size_t> newEntry = { SIZE_MAX, SIZE_MAX };
-		newEntry.first = stringToNum(manipStr.substr(0, delimLoc), 1, SIZE_MAX);
-		newEntry.second = stringToNum(manipStr.substr(delimLoc + 1), 1, SIZE_MAX);
-		if (newEntry.first != SIZE_MAX)
-		{
-			if (newEntry.second != SIZE_MAX)
-			{
-				result = newEntry;
-			}
-		}
-	}
-
 	return result;
 }
-bool validateNewHatEntry(const std::pair<std::string, std::pair<std::size_t, std::size_t>>& pairIn, std::ostream& output)
+bool yesNoDecision(char yesKey, char noKey)
+{
+	char keyIn = ' ';
+	yesKey = std::tolower(yesKey);
+	noKey = std::tolower(noKey);
+	while (keyIn != yesKey && keyIn != noKey)
+	{
+		keyIn = _getch();
+		keyIn = std::tolower(keyIn);
+	}
+	return (keyIn == yesKey);
+}
+
+unsigned long getBankIDInput()
+{
+	unsigned long result = ULONG_MAX;
+	bool idGood = 0;
+	std::string input = "";
+	while (!idGood)
+	{
+		std::cout << "\t";
+		input = "";
+		std::cin >> input;
+		result = stringToNum(input, 0, ULONG_MAX);
+		idGood = lava::brawl::isValidBankID(result);
+		if (!idGood)
+		{
+			std::cout << "\tBad ID provided, please enter another.\n";
+			std::cout << "\tEnsure you enter a valid EX Character SFX ID between " << lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and " << lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
+		}
+	}
+	return result;
+}
+
+bool doSFXIDPrint(const std::vector<unsigned long>& sourceIDList, const std::vector<unsigned long>& destinationIDList, std::string outputFileName)
 {
 	bool result = 0;
-	std::string errorMessage = "";
-	std::string rangeMessage = "Valid range is 0x" +
-		lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, lava::brawl::IDPaddingLength) + " through 0x" +
-		lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, lava::brawl::IDPaddingLength) + ".";
-
-	if (lava::brawl::isValidBankID(pairIn.second.first))
+	std::ofstream output(outputFileName, std::ios_base::out);
+	std::cout << "\tWriting output to \"" << outputFileName << "\"... ";
+	if (output.is_open())
 	{
-		if (lava::brawl::isValidBankID(pairIn.second.second))
+		for (std::size_t u = 0; u < sourceIDList.size(); u++)
+		{
+			output << "0x" << lava::numToHexStringWithPadding(sourceIDList[u], lava::brawl::IDPaddingLength) << " 0x" << lava::numToHexStringWithPadding(destinationIDList[u], lava::brawl::IDPaddingLength) << "\n";
+		}
+		if (output.good())
 		{
 			result = 1;
-			errorMessage = "";
+			std::cout << "Success!\n";
 		}
 		else
 		{
-			errorMessage = "Specified Target Bank ID is outside of the valid range." + rangeMessage;
+			std::cout << "Failure! Output stream became corrupted!\n";
 		}
 	}
 	else
 	{
-		errorMessage = "Specified Source Bank ID is outside of the valid range." + rangeMessage;
-	}
-	if (result == 0)
-	{
-		output << "[ERROR] \"" << pairIn.first << "\" (Source Bank ID 0x" <<
-			lava::numToHexStringWithPadding(pairIn.second.first, lava::brawl::IDPaddingLength) << ", Target Bank ID 0x" <<
-			lava::numToHexStringWithPadding(pairIn.second.second, lava::brawl::IDPaddingLength) << ")\n";
-		output << "\t" << errorMessage;
+		std::cout << "Failure! Unable to open file for output!\n";
 	}
 	return result;
 }
-std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> parseInput(std::string inputFilePath, std::ostream& output)
+
+bool snakeToEXPort()
 {
-	std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> result{};
-
-	std::ifstream banksIn(inputFilePath, std::ios_base::in);
-	if (banksIn.is_open())
-	{
-		std::string currentLine = "";
-		std::string manipStr = "";
-		while (std::getline(banksIn, currentLine))
-		{
-			// Disregard the current line if it's empty, or is marked as a comment
-			if (!currentLine.empty() && currentLine[0] != '#' && currentLine[0] != '/')
-			{
-				manipStr = "";
-				bool inQuote = 0;
-				bool doEscapeChar = 0;
-				for (std::size_t i = 0; i < currentLine.size(); i++)
-				{
-					if (currentLine[i] == '\"' && !doEscapeChar)
-					{
-						inQuote = !inQuote;
-					}
-					else if (currentLine[i] == '\\')
-					{
-						doEscapeChar = 1;
-					}
-					else if (inQuote || !std::isspace(currentLine[i]))
-					{
-						doEscapeChar = 0;
-						manipStr += currentLine[i];
-					}
-				}
-
-				std::pair<std::string, std::pair<std::size_t, std::size_t>> newEntry = { "NEW_UNRECOGNIZED", {SIZE_MAX, SIZE_MAX} };
-
-				std::size_t nameIDDelimLoc = manipStr.find('=');
-				if (nameIDDelimLoc != std::string::npos && nameIDDelimLoc < (manipStr.size() - 1))
-				{
-					newEntry.first = manipStr.substr(0, nameIDDelimLoc);
-				}
-				manipStr = manipStr.substr(nameIDDelimLoc + 1, std::string::npos);
-				newEntry.second = parseIDPair(manipStr);
-				if (validateNewHatEntry(newEntry, output))
-				{
-					output << "[LOADED] \"" << newEntry.first << "\" (Source Bank ID 0x" <<
-						lava::numToHexStringWithPadding(newEntry.second.first, lava::brawl::IDPaddingLength) << ", Target Bank ID 0x" <<
-						lava::numToHexStringWithPadding(newEntry.second.second, lava::brawl::IDPaddingLength) << ")\n";
-					result.push_back(newEntry);
-				}
-			}
-		}
-	}
-
+	bool result = 0;
+	std::cout << "Enter the Destination EX Character's Soundbank ID: \n";
+	unsigned long destEXID = getBankIDInput();
+	std::vector<unsigned long> sourceSFXIDs = lava::brawl::getSnakeIDList();
+	std::vector<unsigned long> destSFXIDs = lava::brawl::getIDList(destEXID);
+	std::string outputFileName = lava::brawl::outputDirectory + "SNAKE_TO_0x" + lava::numToHexStringWithPadding(destEXID, 0x03) + "_sound.txt";
+	doSFXIDPrint(sourceSFXIDs, destSFXIDs, outputFileName);
 	return result;
 }
-
+bool EXToEXPort()
+{
+	bool result = 0;
+	std::cout << "Enter the Source EX Character's Soundbank ID: \n";
+	unsigned long sourceEXID = getBankIDInput();
+	std::cout << "Enter the Destination EX Character's Soundbank ID: \n";
+	unsigned long destEXID = getBankIDInput();
+	std::vector<unsigned long> sourceSFXIDs = lava::brawl::getIDList(sourceEXID);
+	std::vector<unsigned long> destSFXIDs = lava::brawl::getIDList(destEXID);
+	std::string outputFileName = lava::brawl::outputDirectory + "0x" + lava::numToHexStringWithPadding(sourceEXID, 0x03) + "_TO_0x" + lava::numToHexStringWithPadding(destEXID, 0x03) + "_sound.txt";
+	doSFXIDPrint(sourceSFXIDs, destSFXIDs, outputFileName);
+	return result;
+}
+bool EXToSnakePort()
+{
+	bool result = 0;
+	std::cout << "Enter the Source EX Character's Soundbank ID: \n";
+	unsigned long sourceEXID = getBankIDInput();
+	std::vector<unsigned long> sourceSFXIDs = lava::brawl::getIDList(sourceEXID);
+	std::vector<unsigned long> destSFXIDs = lava::brawl::getSnakeIDList();
+	std::string outputFileName = lava::brawl::outputDirectory + "0x" + lava::numToHexStringWithPadding(sourceEXID, 0x03) + "_TO_SNAKE_sound.txt";
+	doSFXIDPrint(sourceSFXIDs, destSFXIDs, outputFileName);
+	return result;
+}
 
 int main()
 {
-	std::ofstream* output = &lava::brawl::outStream;
-	output->open(lava::brawl::outputFilename, std::ios_base::out);
-
-	std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>> toProcess = parseInput(lava::brawl::inputFilename, std::cout);
-
-	for (std::size_t i = 0; i < toProcess.size(); i++)
+	std::cout << "lavaSFXIDReplaceAssist\n\n";
+	bool repeatProgram = 1;
+	while (repeatProgram)
 	{
-		auto currEntry = &toProcess[i];
-		*output << "# " << currEntry->first << " (SFX Bank " << currEntry->second.first << " -> Bank " << currEntry->second.second << ")\n";
-		*output << "# SE Section\n";
-		lava::brawl::outputSEMatchData(currEntry->second.first + 7, currEntry->second.second + 7);
-		*output << "\n# VC Section\n";
-		lava::brawl::outputVCMatchData(currEntry->second.first + 7, currEntry->second.second + 7);
-		*output << "\n";
+		std::cout << "Select Action: [1: Snake->EX] [2: EX->EX] [3: EX->Snake] [0: Exit]\n";
+		bool advance = 0;
+		std::size_t mode = decision("1230");
+		switch (mode)
+		{
+			case 0:
+			{
+				snakeToEXPort();
+				advance = 1;
+				break;
+			}
+			case 1:
+			{
+				EXToEXPort();
+				advance = 1;
+				break;
+			}
+			case 2:
+			{
+				EXToSnakePort();
+				advance = 1;
+				break;
+			}
+			case 3:
+			{
+				advance = 1;
+				repeatProgram = 0;
+				break;
+			}
+			default:
+			{
+				advance = 0;
+				break;
+			}
+		}
 	}
-
 
 	return 0;
 }

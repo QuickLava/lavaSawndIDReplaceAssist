@@ -2,5 +2,7 @@
 Debug/**
 Release/**
 lavaSawndIDReplaceAssist/Debug/**
+lavaSawndIDReplaceAssist/Mappings/**
+lavaSawndIDReplaceAssist/Junk/**
 lavaSawndIDReplaceAssist/correspondanceOutput.txt
 lavaSawndIDReplaceAssist/sound.txt

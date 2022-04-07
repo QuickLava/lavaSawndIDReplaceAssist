@@ -29,10 +29,6 @@ namespace lava
 
 	namespace brawl
 	{
-        extern std::ofstream outStream = std::ofstream();
-        extern const std::string inputFilename = "bankMapping.txt";
-        extern const std::string outputFilename = "sound.txt";
-
         bool isWithinRange(unsigned int valueIn, unsigned int lowerBound, unsigned int higherBound)
         {
             return (lowerBound <= valueIn && valueIn <= higherBound);
@@ -48,73 +44,31 @@ namespace lava
 
             if (isValidBankID(exSoundbankID))
             {
-                int a5Mult = exSoundbankID - lava::brawl::lowerBankIDBound;
-                int initialOffset = seInitialInfoIndex;
-                for (int _infoIndex = 0; _infoIndex < seSectionLength; _infoIndex++)
+                int initialIndex = 0xA5 * (exSoundbankID - lava::brawl::lowerBankIDBound);
+                for (int _infoIndex = vcInitialInfoIndex; _infoIndex < vcSectionLength + vcInitialInfoIndex; _infoIndex++)
                 {
-                    result.push_back(((_infoIndex + initialOffset) + seInfoIndexOffset + (0xA5 * a5Mult)));
+                    result.push_back((_infoIndex + vcInfoIndexOffset + initialIndex));
                 }
-                for (int _infoIndex = 0; _infoIndex < vcSectionLength; _infoIndex++)
+                for (int _infoIndex = seInitialInfoIndex; _infoIndex < seSectionLength + seInitialInfoIndex; _infoIndex++)
                 {
-                    result.push_back(((_infoIndex + initialOffset) + vcInfoIndexOffset + (0xA5 * a5Mult)));
+                    result.push_back((_infoIndex + seInfoIndexOffset + initialIndex));
                 }
             }
 
             return result;
         }
-
-        bool outputSEMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank)
+        std::vector<unsigned long> getSnakeIDList()
         {
-            bool result = 0;
+            std::vector<unsigned long> result{};
 
-            if (isValidBankID(baseSoundbank) && isValidBankID(targetSoundbank))
+            for (int _infoIndex = vcInitialInfoIndex; _infoIndex < vcInitialInfoIndex + vcSectionLength; _infoIndex++)
             {
-                result = 1;
-
-                int a5Mult1 = baseSoundbank - lava::brawl::lowerBankIDBound;
-                int a5Mult2 = targetSoundbank - lava::brawl::lowerBankIDBound;
-                int initialOffset = seInitialInfoIndex;
-
-                for (int _infoIndex = 0; _infoIndex < seSectionLength; _infoIndex++)
-                {
-                    std::cout << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + seInfoIndexOffset + (0xA5 * a5Mult1)), IDPaddingLength) << " ";
-                    std::cout << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + seInfoIndexOffset + (0xA5 * a5Mult2)), IDPaddingLength) << " \n";
-                    outStream << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + seInfoIndexOffset + (0xA5 * a5Mult1)), IDPaddingLength) << " ";
-                    outStream << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + seInfoIndexOffset + (0xA5 * a5Mult2)), IDPaddingLength) << " \n";
-                }
+                result.push_back(_infoIndex);
             }
-
-            return result;
-        }
-        bool outputVCMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank)
-        {
-            bool result = 0;
-
-            if (isValidBankID(baseSoundbank) && isValidBankID(targetSoundbank))
+            for (int _infoIndex = seInitialInfoIndex; _infoIndex < seInitialInfoIndex + seSectionLength; _infoIndex++)
             {
-                result = 1;
-
-                int a5Mult1 = baseSoundbank - lava::brawl::lowerBankIDBound;
-                int a5Mult2 = targetSoundbank - lava::brawl::lowerBankIDBound;
-                int initialOffset = vcInitialInfoIndex;
-
-                for (int _infoIndex = 0; _infoIndex < vcSectionLength; _infoIndex++)
-                {
-                    std::cout << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + vcInfoIndexOffset + (0xA5 * a5Mult1)), IDPaddingLength) << " ";
-                    std::cout << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + vcInfoIndexOffset + (0xA5 * a5Mult2)), IDPaddingLength) << " \n";
-                    outStream << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + vcInfoIndexOffset + (0xA5 * a5Mult1)), IDPaddingLength) << " ";
-                    outStream << "0x" << lava::numToHexStringWithPadding(((_infoIndex + initialOffset) + vcInfoIndexOffset + (0xA5 * a5Mult2)), IDPaddingLength) << " \n";
-                }
+                result.push_back(_infoIndex);
             }
-
-            return result;
-        }
-        bool outputMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank)
-        {
-            bool result = outputSEMatchData(baseSoundbank, targetSoundbank);
-            std::cout << "\n";
-            outStream << "\n";
-            result &= outputVCMatchData(baseSoundbank, targetSoundbank);
 
             return result;
         }

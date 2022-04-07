@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <conio.h>
 
 namespace lava
 {
@@ -13,8 +14,8 @@ namespace lava
 
 	namespace brawl
 	{
-		extern std::ofstream outStream;
-        
+        const std::string outputDirectory = "./Mappings/";
+
         constexpr unsigned int IDPaddingLength = 0x04;
 
         constexpr unsigned int lowerBankIDBound = 331;
@@ -26,15 +27,17 @@ namespace lava
         constexpr unsigned int vcInitialInfoIndex = 0xA34;
         constexpr unsigned int vcInfoIndexOffset = 0x35CC;
 
-        extern const std::string inputFilename;
-        extern const std::string outputFilename;
-
         bool isWithinRange(unsigned int valueIn, unsigned int lowerBound, unsigned int higherBound);
         bool isValidBankID(unsigned int bankIDIn);
 
-        bool outputSEMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);
+        std::vector<unsigned long> getIDList(unsigned long exSoundbankID);
+        std::vector<unsigned long> getSnakeIDList();
+        bool outputSoundMapping(std::ofstream& output);
+        //bool outputLMPRPatch(std::ofstream& output);
+
+        /*bool outputSEMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);
         bool outputVCMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);
-        bool outputMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);
+        bool outputMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);*/
     }
 }
 
