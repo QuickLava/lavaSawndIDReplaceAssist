@@ -14,9 +14,11 @@ namespace lava
 
 	namespace brawl
 	{
-        const std::string outputDirectory = "./Mappings/";
-
-        constexpr unsigned int IDPaddingLength = 0x04;
+        const std::string programDisplayName = "lavaSFXIDReplaceAssist";
+        const std::string version = "v0.75";
+        const std::string outputDirectory = "./Soundbank_Mapping_Output/";
+        const std::string soundTXTSuffix = "_sound.txt";
+        const std::string lMPRSuffix = "_lMPR.xml";
 
         constexpr unsigned int lowerBankIDBound = 331;
         constexpr unsigned int higherBankIDBound = 587;
@@ -32,12 +34,6 @@ namespace lava
 
         std::vector<unsigned long> getIDList(unsigned long exSoundbankID);
         std::vector<unsigned long> getSnakeIDList();
-        bool outputSoundMapping(std::ofstream& output);
-        //bool outputLMPRPatch(std::ofstream& output);
-
-        /*bool outputSEMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);
-        bool outputVCMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);
-        bool outputMatchData(unsigned int baseSoundbank, unsigned int targetSoundbank);*/
     }
 }
 
