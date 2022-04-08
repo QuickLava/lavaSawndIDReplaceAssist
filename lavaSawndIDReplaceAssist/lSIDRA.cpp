@@ -179,8 +179,8 @@ namespace lava
 		{
 			bool result = 0;
 
-			std::cout << "\tSelect Patch Mode: [1: \"sound.txt\" (for P+EX Porting Tools)] [2: lMPR Patch] [0: Exit]\n\t";
-			std::size_t patchMode = decision("120");
+			std::cout << "\tSelect Patch Mode: [1: \"sound.txt\" (for P+EX Porting Tools)] [0: Exit]\n\t";
+			std::size_t patchMode = decision("10");
 			switch (patchMode)
 			{
 				case 0:
@@ -191,15 +191,15 @@ namespace lava
 					result = outputSoundTXT(output, sourceIDList, destinationIDList, outputFileName);
 					break;
 				}
-				case 1:
+				/*case 1:
 				{
 					std::string outputFilePath = lava::brawl::outputDirectory + outputFileName + lava::brawl::lMPRSuffix;
 					std::cout << "Writing output to \"" << outputFilePath << "\"... ";
 					std::ofstream output(outputFilePath);
 					result = outputLMPRPatch(output, sourceIDList, destinationIDList, outputFileName);
 					break;
-				}
-				case 2:
+				}*/
+				case 1:
 				{
 					std::cout << "Skipping Output.\n";
 					break;

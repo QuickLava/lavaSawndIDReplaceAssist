@@ -16,7 +16,7 @@ namespace lava
 	namespace brawl
 	{
         const std::string programDisplayName = "lavaSFXIDReplaceAssist";
-        const std::string version = "v1.00";
+        const std::string version = "v1.0.0";
         const std::string outputDirectory = "./Soundbank_Mapping_Output/";
         const std::string soundTXTSuffix = "_sound.txt";
         const std::string lMPRSuffix = "_lMPR.xml";
