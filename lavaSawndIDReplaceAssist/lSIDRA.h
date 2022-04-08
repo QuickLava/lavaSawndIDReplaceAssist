@@ -11,7 +11,8 @@ namespace lava
 {
     std::string numToHexStringWithPadding(std::size_t numIn, std::size_t paddingLength = 8);
     std::string numToDecStringWithPadding(std::size_t numIn, std::size_t paddingLength = 8);
-
+    int stringToNum(const std::string& stringIn, bool allowNeg, int defaultVal);
+	std::size_t decision(const std::string optionsIn);
 	namespace brawl
 	{
         const std::string programDisplayName = "lavaSFXIDReplaceAssist";
@@ -34,6 +35,15 @@ namespace lava
 
         std::vector<unsigned long> getIDList(unsigned long exSoundbankID);
         std::vector<unsigned long> getSnakeIDList();
+
+		bool outputSoundTXT(std::ostream& output, const std::vector<unsigned long>& sourceIDList, const std::vector<unsigned long>& destinationIDList, std::string outputFileName);
+		bool outputLMPRPatch(std::ostream& output, const std::vector<unsigned long>& sourceIDList, const std::vector<unsigned long>& destinationIDList, std::string outputFileName);
+		bool initiatePrintingOutput(const std::vector<unsigned long>& sourceIDList, const std::vector<unsigned long>& destinationIDList, std::string outputFileName);
+
+		unsigned long getBankIDInput();
+		bool snakeToEXPort();
+        bool EXToEXPort();
+        bool EXToSnakePort();
     }
 }
 
