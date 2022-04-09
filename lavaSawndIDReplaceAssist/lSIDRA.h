@@ -15,7 +15,7 @@ namespace lava
 	std::size_t decision(const std::string optionsIn);
 	namespace brawl
 	{
-        const std::string programDisplayName = "lavaSFXIDReplaceAssist";
+        const std::string programDisplayName = "lavaSawndIDReplaceAssist";
         const std::string version = "v1.0.0";
         const std::string outputDirectory = "./Soundbank_Mapping_Output/";
         const std::string soundTXTSuffix = "_sound.txt";
