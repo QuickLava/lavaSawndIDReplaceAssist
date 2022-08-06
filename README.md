@@ -12,7 +12,7 @@ At any point where you're prompted to input a numerical value (eg. Soundbank ID)
 ## Actions
 Snake->EX: Generates a patch for converting Snake SFX IDs into those appropriate for an EX Clone with the specified Soundbank ID. Typically used in conjunction with [lavaSawndPortingUtility](https://github.com/QuickLava/lavaSawndPortingUtility) in order to quickly set up unique soundbanks for EX Clones.
 
-EX->EX: Generates a patch for converting SFX IDs for an EX Clone with one Soundbank ID into those appropriate for an EX Clone with a different SFX ID. Useful if you need to change a clone's Soundbank ID for some reason.
+EX->EX: Generates a patch for converting SFX IDs for an EX Clone with one Soundbank ID into those appropriate for an EX Clone with a different Soundbank ID. Useful if you need to change a clone's Soundbank ID for some reason.
 
 EX->Snake: Generate a patch for converting the SFX IDs for an EX Clone with the specified Soundbank ID into those appropriate for Snake. Useful, I suppose, if you wanted to port an EX Clone to be over Snake directly.
 
