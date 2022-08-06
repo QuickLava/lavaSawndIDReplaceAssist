@@ -221,11 +221,11 @@ int main(int argc, char** argv)
 					std::cout << "Please provide one of the following sets of arguments!\n";
 				}
 				std::cout << "To create a patch converting Snake SFX IDs to EX SFX IDs:\n";
-				std::cout << "\snaketoex {DESTINATION_EX_SAWND_ID} {OUTPUT_PATH, optional}\n";
+				std::cout << "\tsnaketoex {DESTINATION_EX_SAWND_ID} {OUTPUT_PATH, optional}\n";
 				std::cout << "To create a patch converting EX SFX IDs to EX SFX IDs:\n";
-				std::cout << "\snaketoex {SOURCE_EX_SAWND_ID} {DESTINATION_EX_SAWND_ID} {OUTPUT_PATH, optional}\n";
+				std::cout << "\tsnaketoex {SOURCE_EX_SAWND_ID} {DESTINATION_EX_SAWND_ID} {OUTPUT_PATH, optional}\n";
 				std::cout << "To create a patch converting EX SFX IDs to SNAKE SFX IDs:\n";
-				std::cout << "\snaketoex {SOURCE_EX_SAWND_ID} {OUTPUT_PATH, optional}\n";
+				std::cout << "\tsnaketoex {SOURCE_EX_SAWND_ID} {OUTPUT_PATH, optional}\n";
 			}
 		}
 		catch (std::exception e)
