@@ -268,5 +268,50 @@ namespace lava
 			return result;
 		}
 
+		bool hfInitiatePrintingOutput(const std::vector<unsigned long>& sourceIDList, const std::vector<unsigned long>& destinationIDList, std::string outputFilePath, unsigned long patchMode)
+		{
+			bool result = 0;
+
+			switch (patchMode)
+			{
+				case 0:
+				{
+					std::cout << "Writing output to \"" << outputFilePath << "\"... ";
+					std::ofstream output(outputFilePath);
+					result = outputSoundTXT(output, sourceIDList, destinationIDList, outputFilePath);
+					break;
+				}
+				/*case 1:
+				{
+					std::cout << "Writing output to \"" << outputFilePath << "\"... ";
+					std::ofstream output(outputFilePath);
+					result = outputLMPRPatch(output, sourceIDList, destinationIDList, outputFilePath);
+					break;
+				}*/
+				default:
+				{
+					break;
+				}
+			}
+			return result;
+		}
+		bool hfSnakeToEXPort(unsigned long destinationID, std::string outputFilepath, unsigned long patchMode)
+		{
+			std::vector<unsigned long> sourceSFXIDs = lava::brawl::getSnakeIDList();
+			std::vector<unsigned long> destSFXIDs = lava::brawl::getIDList(destinationID);
+			return hfInitiatePrintingOutput(sourceSFXIDs, destSFXIDs, outputFilepath, patchMode);
+		}
+		bool hfEXToEXPort(unsigned long sourceID, unsigned long destinationID, std::string outputFilePath, unsigned long patchMode)
+		{
+			std::vector<unsigned long> sourceSFXIDs = lava::brawl::getIDList(sourceID);
+			std::vector<unsigned long> destSFXIDs = lava::brawl::getIDList(destinationID);
+			return hfInitiatePrintingOutput(sourceSFXIDs, destSFXIDs, outputFilePath, patchMode);
+		}
+		bool hfEXToSnakePort(unsigned long sourceID, std::string outputFilePath, unsigned long patchMode)
+		{
+			std::vector<unsigned long> sourceSFXIDs = lava::brawl::getIDList(sourceID);
+			std::vector<unsigned long> destSFXIDs = lava::brawl::getSnakeIDList();
+			return hfInitiatePrintingOutput(sourceSFXIDs, destSFXIDs, outputFilePath, patchMode);
+		}
 	}
 }

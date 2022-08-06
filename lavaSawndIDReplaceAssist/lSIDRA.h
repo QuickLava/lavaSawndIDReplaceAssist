@@ -44,6 +44,13 @@ namespace lava
 		bool snakeToEXPort();
         bool EXToEXPort();
         bool EXToSnakePort();
+        
+        // Hands-free Functions
+        // Equivalents to the above functions which don't use prompts.
+        bool hfInitiatePrintingOutput(const std::vector<unsigned long>& sourceIDList, const std::vector<unsigned long>& destinationIDList, std::string outputFilePath, unsigned long patchMode);
+        bool hfSnakeToEXPort(unsigned long destinationID, std::string outputFilepath, unsigned long patchMode);
+        bool hfEXToEXPort(unsigned long sourceID, unsigned long destinationID, std::string outputFilePath, unsigned long patchMode);
+        bool hfEXToSnakePort(unsigned long sourceID, std::string outputFilePath, unsigned long patchMode);
     }
 }
 
