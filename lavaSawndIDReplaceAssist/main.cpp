@@ -211,12 +211,15 @@ int main(int argc, char** argv)
 			}
 			else
 			{
-				std::cout << "Invalid operation argument set supplied:\n";
-				for (unsigned long i = 0; i < argc; i++)
+				if (strcmp("help", argv[1]) != 0 && strcmp("h", argv[1]) != 0)
 				{
-					std::cout << "\tArgv[" << i << "]: " << argv[i] << "\n";
+					std::cout << "Invalid operation argument set supplied:\n";
+					for (unsigned long i = 0; i < argc; i++)
+					{
+						std::cout << "\tArgv[" << i << "]: " << argv[i] << "\n";
+					}
+					std::cout << "Please provide one of the following sets of arguments!\n";
 				}
-				std::cout << "Please provide one of the following sets of arguments!\n";
 				std::cout << "To create a patch converting Snake SFX IDs to EX SFX IDs:\n";
 				std::cout << "\snaketoex {DESTINATION_EX_SAWND_ID} {OUTPUT_PATH, optional}\n";
 				std::cout << "To create a patch converting EX SFX IDs to EX SFX IDs:\n";
