@@ -57,6 +57,17 @@ namespace lava
 
 	namespace brawl
 	{
+		bool ppexModeEnabled = 0;
+
+		void setPPEXMode(bool enabled)
+		{
+			ppexModeEnabled = enabled;
+		}
+		bool getPPEXMode()
+		{
+			return ppexModeEnabled;
+		}
+
         bool isWithinRange(unsigned int valueIn, unsigned int lowerBound, unsigned int higherBound)
         {
             return (lowerBound <= valueIn && valueIn <= higherBound);
@@ -113,16 +124,7 @@ namespace lava
 				if (output.good())
 				{
 					result = 1;
-					std::cout << "Success!\n";
 				}
-				else
-				{
-					std::cout << "Failure! Output stream became corrupted!\n";
-				}
-			}
-			else
-			{
-				std::cout << "Failure! Unable to open file for output!\n";
 			}
 			return result;
 		}
@@ -161,16 +163,7 @@ namespace lava
 				if (output.good())
 				{
 					result = 1;
-					std::cout << "Success!\n";
 				}
-				else
-				{
-					std::cout << "Failure! Output stream became corrupted!\n";
-				}
-			}
-			else
-			{
-				std::cout << "Failure! Unable to open file for output!\n";
 			}
 
 			return result;
@@ -179,7 +172,7 @@ namespace lava
 		{
 			bool result = 0;
 
-			std::cout << "\tSelect Patch Mode: [1: \"sound.txt\" (for P+EX Porting Tools)] [0: Exit]\n\t";
+			std::cout << "Select Patch Mode: [1: \"sound.txt\" (for P+EX Porting Tools)] [0: Cancel]\n\t";
 			std::size_t patchMode = decision("10");
 			switch (patchMode)
 			{
@@ -188,7 +181,22 @@ namespace lava
 					std::string outputFilePath = lava::brawl::outputDirectory + outputFileName + lava::brawl::soundTXTSuffix;
 					std::cout << "Writing output to \"" << outputFilePath << "\"... ";
 					std::ofstream output(outputFilePath);
-					result = outputSoundTXT(output, sourceIDList, destinationIDList, outputFileName);
+					if (output.is_open())
+					{
+						result = outputSoundTXT(output, sourceIDList, destinationIDList, outputFileName);
+						if (result)
+						{
+							std::cout << "Success!\n\n";
+						}
+						else
+						{
+							std::cerr << "Failure! Output stream became corrupt!\n\n";
+						}
+					}
+					else
+					{
+						std::cerr << "Failure! Unable to open output stream, couldn't write output!\n\n";
+					}
 					break;
 				}
 				/*case 1:
@@ -206,6 +214,7 @@ namespace lava
 				}
 				default:
 				{
+					std::cout << "Invalid patchMode (" << patchMode << ") specified!\n";
 					break;
 				}
 			}
@@ -223,11 +232,15 @@ namespace lava
 				input = "";
 				std::cin >> input;
 				result = stringToNum(input, 0, ULONG_MAX);
+				if (ppexModeEnabled)
+				{
+					result += 7;
+				}
 				idGood = lava::brawl::isValidBankID(result);
 				if (!idGood)
 				{
 					std::cout << "\tBad ID provided, please enter another.\n";
-					std::cout << "\tEnsure you enter a valid EX Character SFX ID between " << lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and " << lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
+					std::cout << "\tEnsure you enter a valid EX Character Soundbank ID between " << lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and " << lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 				}
 			}
 			return result;
@@ -239,7 +252,16 @@ namespace lava
 			unsigned long destEXID = getBankIDInput();
 			std::vector<unsigned long> sourceSFXIDs = lava::brawl::getSnakeIDList();
 			std::vector<unsigned long> destSFXIDs = lava::brawl::getIDList(destEXID);
-			std::string outputFileName = "SNAKE_TO_0x" + lava::numToHexStringWithPadding(destEXID, 0x03);
+			std::string outputFileName = "SNAKE_TO_0x";
+			if (ppexModeEnabled)
+			{
+				outputFileName += lava::numToHexStringWithPadding(destEXID - 7, 0x03);
+				outputFileName += "_PPEX";
+			}
+			else
+			{
+				outputFileName += lava::numToHexStringWithPadding(destEXID, 0x03);
+			}
 			initiatePrintingOutput(sourceSFXIDs, destSFXIDs, outputFileName);
 			return result;
 		}
@@ -252,7 +274,25 @@ namespace lava
 			unsigned long destEXID = getBankIDInput();
 			std::vector<unsigned long> sourceSFXIDs = lava::brawl::getIDList(sourceEXID);
 			std::vector<unsigned long> destSFXIDs = lava::brawl::getIDList(destEXID);
-			std::string outputFileName = "0x" + lava::numToHexStringWithPadding(sourceEXID, 0x03) + "_TO_0x" + lava::numToHexStringWithPadding(destEXID, 0x03);
+			std::string outputFileName = "0x";
+			if (ppexModeEnabled)
+			{
+				outputFileName += lava::numToHexStringWithPadding(sourceEXID - 7, 0x03);
+			}
+			else
+			{
+				outputFileName += lava::numToHexStringWithPadding(sourceEXID, 0x03);
+			}
+			outputFileName += "_TO_0x";
+			if (ppexModeEnabled)
+			{
+				outputFileName += lava::numToHexStringWithPadding(destEXID - 7, 0x03);
+				outputFileName += "_PPEX";
+			}
+			else
+			{
+				outputFileName += lava::numToHexStringWithPadding(destEXID, 0x03);
+			}
 			initiatePrintingOutput(sourceSFXIDs, destSFXIDs, outputFileName);
 			return result;
 		}
@@ -263,7 +303,20 @@ namespace lava
 			unsigned long sourceEXID = getBankIDInput();
 			std::vector<unsigned long> sourceSFXIDs = lava::brawl::getIDList(sourceEXID);
 			std::vector<unsigned long> destSFXIDs = lava::brawl::getSnakeIDList();
-			std::string outputFileName = "0x" + lava::numToHexStringWithPadding(sourceEXID, 0x03) + "_TO_SNAKE";
+			std::string outputFileName = "0x";
+			if (ppexModeEnabled)
+			{
+				outputFileName += lava::numToHexStringWithPadding(sourceEXID - 7, 0x03);
+			}
+			else
+			{
+				outputFileName += lava::numToHexStringWithPadding(sourceEXID, 0x03);
+			}
+			outputFileName += "_TO_SNAKE";
+			if (ppexModeEnabled)
+			{
+				outputFileName += "_PPEX";
+			}
 			initiatePrintingOutput(sourceSFXIDs, destSFXIDs, outputFileName);
 			return result;
 		}
@@ -290,6 +343,7 @@ namespace lava
 				}*/
 				default:
 				{
+					std::cout << "Invalid patchMode (" << patchMode << ") specified!\n";
 					break;
 				}
 			}

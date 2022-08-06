@@ -8,12 +8,37 @@ bool isNullArg(const char* argIn)
 
 int main(int argc, char** argv)
 {
-	std::cout << lava::brawl::programDisplayName << " " << lava::brawl::version << "\n";
+	std::cout << lava::brawl::programDisplayName << " " << lava::brawl::version << "\n\n";
 
 	// If no arguments are provided
 	if (argc < 2)
 	{
-		std::cout << "Important Note: When using with P+EX, remember to add 7 to your characters' Soundbank IDs (assigned in FighterXX.dat).\n\n";
+		std::cout << "Would you like to enable P+EX Mode?\n";
+		std::cout << "This will automatically adjust generated SFX IDs for P+EX compatibility.\n";
+		std::cout << "Regardless of your choice, be sure to input Soundbank IDs exactly as listed in your characters' FighterXX.dat files!\n";
+		std::cout << "Enable?: [1: Yes] [2: No] [0: Exit]\n";
+		std::size_t ppexModeChoice = lava::decision("120");
+		switch (ppexModeChoice)
+		{
+			case 0:
+			{
+				lava::brawl::setPPEXMode(1);
+				std::cout << "P+EX Mode is enabled!\n\n";
+				break;
+			}
+			case 1:
+			{
+				lava::brawl::setPPEXMode(0);
+				std::cout << "P+EX Mode is not enabled!\n\n";
+				break;
+			}
+			default:
+			{
+				return 0;
+				break;
+			}
+		}
+
 		bool repeatProgram = 1;
 		while (repeatProgram)
 		{
@@ -92,7 +117,7 @@ int main(int argc, char** argv)
 				else
 				{
 					std::cerr << "[ERROR] Unable to complete Snake-To-EX port: Invalid Destination SFX ID provided!\n";
-					std::cout << "\tEnsure you enter a valid EX Character SFX ID between "
+					std::cout << "\tEnsure you enter a valid EX Character Soundbank ID between "
 						<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and "
 						<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 				}
@@ -134,7 +159,7 @@ int main(int argc, char** argv)
 					else
 					{
 						std::cerr << "[ERROR] Unable to complete EX-To-EX port: Invalid Destination SFX ID provided!\n";
-						std::cout << "\tEnsure you enter a valid EX Character SFX ID between " 
+						std::cout << "\tEnsure you enter a valid EX Character Soundbank ID between " 
 							<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and " 
 							<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 					}
@@ -142,7 +167,7 @@ int main(int argc, char** argv)
 				else
 				{
 					std::cerr << "[ERROR] Unable to complete EX-To-EX port: Invalid Source SFX ID provided!\n";
-					std::cout << "\tEnsure you enter a valid EX Character SFX ID between "
+					std::cout << "\tEnsure you enter a valid EX Character Soundbank ID between "
 						<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and "
 						<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 				}
@@ -179,7 +204,7 @@ int main(int argc, char** argv)
 				else
 				{
 					std::cerr << "[ERROR] Unable to complete EX-To-Snake port: Invalid Destination SFX ID provided!\n";
-					std::cout << "\tEnsure you enter a valid EX Character SFX ID between "
+					std::cout << "\tEnsure you enter a valid EX Character Soundbank ID between "
 						<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and "
 						<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 				}

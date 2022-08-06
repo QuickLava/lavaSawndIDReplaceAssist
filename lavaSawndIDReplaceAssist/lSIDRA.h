@@ -30,6 +30,9 @@ namespace lava
         constexpr unsigned int vcInitialInfoIndex = 0xA34;
         constexpr unsigned int vcInfoIndexOffset = 0x35CC;
 
+        void setPPEXMode(bool enabled);
+        bool getPPEXMode();
+
         bool isWithinRange(unsigned int valueIn, unsigned int lowerBound, unsigned int higherBound);
         bool isValidBankID(unsigned int bankIDIn);
 
