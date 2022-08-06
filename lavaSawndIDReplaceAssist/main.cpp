@@ -91,6 +91,9 @@ int main(int argc, char** argv)
 				else
 				{
 					std::cerr << "[ERROR] Unable to complete Snake-To-EX port: Invalid Destination SFX ID provided!\n";
+					std::cout << "\tEnsure you enter a valid EX Character SFX ID between "
+						<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and "
+						<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 				}
 			}
 			// args: progloc extoex sourceID destID outputfile(opt) patchMode(opt)
@@ -129,11 +132,17 @@ int main(int argc, char** argv)
 					else
 					{
 						std::cerr << "[ERROR] Unable to complete EX-To-EX port: Invalid Destination SFX ID provided!\n";
+						std::cout << "\tEnsure you enter a valid EX Character SFX ID between " 
+							<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and " 
+							<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 					}
 				}
 				else
 				{
 					std::cerr << "[ERROR] Unable to complete EX-To-EX port: Invalid Source SFX ID provided!\n";
+					std::cout << "\tEnsure you enter a valid EX Character SFX ID between "
+						<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and "
+						<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 				}
 			}
 			// args: progloc extosnake sourceID outputfile(opt) patchMode(opt)
@@ -167,6 +176,9 @@ int main(int argc, char** argv)
 				else
 				{
 					std::cerr << "[ERROR] Unable to complete EX-To-Snake port: Invalid Destination SFX ID provided!\n";
+					std::cout << "\tEnsure you enter a valid EX Character SFX ID between "
+						<< lava::brawl::lowerBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::lowerBankIDBound, 0x04) << ") and "
+						<< lava::brawl::higherBankIDBound << " (0x" << lava::numToHexStringWithPadding(lava::brawl::higherBankIDBound, 0x04) << ").\n";
 				}
 			}
 			else
